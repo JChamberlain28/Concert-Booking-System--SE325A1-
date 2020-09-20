@@ -8,12 +8,20 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
+//TODO: is this an entity
+@Entity
 public class Seat {
 
+	@Id
+	@GeneratedValue
+	private int id;
+	@Column(name = "LABEL")
 	private String label;
+	@Column(name = "PRICE")
 	private BigDecimal price;
+	@Column(name = "IS_BOOKED")
 	private boolean isBooked;
+	@Column(name = "DATE")
 	private LocalDateTime date;
 
 	public Seat() {}

@@ -14,25 +14,35 @@ import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
 import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
 
 @Entity
+@Table(name ="CONCERTS")
 public class Concert {
 
     // TODO Implement this class.
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "TITLE")
     private String title;
+    @Column(name = "IMAGE_NAME")
     private String imageName;
+    @Column(name = "BLURB", length = 2048)
     private String blurb;
 
 
     @ElementCollection
+    @Column(name = "DATE")
     private Set<LocalDateTime> dates = new HashSet<>(); //TODO: should autogen CONCERT_DATES table (check tat hashset makes date the pk)
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}) // TODO: is it many to many, and oes cascade delete delete a performer even if it is also referd to by another concert
-    private List<Performer> performers = new ArrayList<>();
 
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}) // TODO: is it many to many, and oes cascade delete delete a performer even if it is also referd to by another concert
+    @JoinTable(
+            name = "CONCERT_PERFORMER",
+            joinColumns=@JoinColumn(name = "CONCERT_ID"),
+            inverseJoinColumns=@JoinColumn(name = "PERFORMER_ID"))
+   // private Set<Performer> performers = new HashSet<>(); //TODO: change back to arraylist?
+    private List<Performer> performers = new ArrayList<>();
     public Concert() {
     }
 
@@ -90,12 +100,11 @@ public class Concert {
     }
 
     public List<Performer> getPerformers() {
-        return performers;
+        return new ArrayList<>(performers);
     }
 
-    public void setPerformers(List<Performer> performers) {
-        this.performers = performers;
-    }
+    public void setPerformers(List<Performer> performers) { this.performers = performers; }//new HashSet<>(performers);
+
 
 
 

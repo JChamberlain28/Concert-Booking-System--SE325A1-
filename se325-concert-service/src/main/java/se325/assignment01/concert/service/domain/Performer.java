@@ -5,22 +5,33 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import se325.assignment01.concert.common.dto.PerformerDTO;
 import se325.assignment01.concert.common.types.Genre;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
+@Table(name ="PERFORMERS")
 public class Performer implements Comparable<Performer> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "NAME")
     private String name;
+    @Column(name = "IMAGE_NAME")
     private String imageName;
+    @Column(name = "GENRE")
+    @Enumerated(EnumType.STRING)
     private Genre genre;
+    @Column(name = "BLURB", length = 2048)
     private String blurb;
+
+    @ManyToMany(mappedBy = "performers")
+    //private Set<Concert> concerts = new HashSet<>();
+    private List<Concert> concerts = new ArrayList<>();
 
     public Performer() {
     }
@@ -73,6 +84,14 @@ public class Performer implements Comparable<Performer> {
         this.blurb = blurb;
     }
 
+    public List<Concert> getConcerts() {
+        return concerts;
+    }
+
+    public void setConcerts(List<Concert> concerts) {
+        this.concerts = concerts;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -103,4 +122,6 @@ public class Performer implements Comparable<Performer> {
     public int compareTo(Performer other) {
         return other.getName().compareTo(getName());
     }
+
+
 }

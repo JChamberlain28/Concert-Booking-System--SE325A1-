@@ -4,11 +4,23 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import se325.assignment01.concert.common.dto.UserDTO;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+
+@Entity
+@Table(name ="USERS")
 public class User {
+
 
     private String username;
     private String password;
+
+    @Id
     private Long id;
+
+
     private int version;
 
     protected User() {
