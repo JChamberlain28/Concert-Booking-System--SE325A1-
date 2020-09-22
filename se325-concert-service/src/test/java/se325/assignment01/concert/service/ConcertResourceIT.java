@@ -59,7 +59,8 @@ public class ConcertResourceIT {
      * The request should return a 200 response, with the requested concert DTO. The concert DTO should contain all
      * performers and dates for that concert.
      */
-    @Test
+
+@Test
     public void testGetSingleConcert() {
 
         ConcertDTO concert = client.target(WEB_SERVICE_URI + "/concerts/1").request().get(ConcertDTO.class);
@@ -83,7 +84,9 @@ public class ConcertResourceIT {
      * A more advanced version of the test above. Makes sure the web service still functions correctly when requesting
      * a concert with multiple performers and dates.
      */
-    @Test
+
+
+@Test
     public void testGetSingleConcertWithMultiplePerformersAndDates() {
 
         ConcertDTO concert = client.target(WEB_SERVICE_URI + "/concerts/4").request().get(ConcertDTO.class);
@@ -105,7 +108,9 @@ public class ConcertResourceIT {
     /**
      * Tests that a 404 response is returned when requesting a nonexistent concert.
      */
-    @Test
+
+
+@Test
     public void testGetNonExistentConcert() {
         Response response = client.target(WEB_SERVICE_URI + "/concerts/100").request().get();
 
@@ -115,7 +120,9 @@ public class ConcertResourceIT {
     /**
      * Tests that all concerts are returned when requested.
      */
-    @Test
+
+
+@Test
     public void testGetAllConcerts() {
 
         List<ConcertDTO> concerts = client
@@ -148,7 +155,9 @@ public class ConcertResourceIT {
      * Tests that all concert summaries are returned when requested. Concert summaries contain only the id, title, and
      * image name for each concert.
      */
-    @Test
+
+
+@Test
     public void testGetConcertSummaries() {
 
         List<ConcertSummaryDTO> concerts = client
@@ -176,7 +185,9 @@ public class ConcertResourceIT {
      * Tests that a 200 response is returned, along with the correct performer info, when requesting a performer with
      * a given id.
      */
-    @Test
+
+    @Ignore
+@Test
     public void testGetSinglePerformer() {
 
         PerformerDTO performer = client.target(WEB_SERVICE_URI + "/performers/1").request().get(PerformerDTO.class);
@@ -190,7 +201,9 @@ public class ConcertResourceIT {
     /**
      * Tests that a 404 response is returned when requesting a nonexistent performer.
      */
-    @Test
+
+    @Ignore
+@Test
     public void testGetNonExistentPerformer() {
 
         Response response = client.target(WEB_SERVICE_URI + "/performers/100").request().get();
@@ -202,7 +215,8 @@ public class ConcertResourceIT {
     /**
      * Tests that all performers are returned when requested.
      */
-    @Test
+    @Ignore
+@Test
     public void testGetAllPerformers() {
 
         List<PerformerDTO> performers = client
@@ -233,7 +247,8 @@ public class ConcertResourceIT {
      * Tests that a 401 error is returned when an incorrect username is supplied on login, and makes sure that
      * no authentication token is generated.
      */
-    @Test
+    @Ignore
+@Test
     public void testFailedLogin_IncorrectUsername() {
         // Log in
         Response loginResponse = login(client, "tesftuser", "pa55word");
@@ -245,7 +260,8 @@ public class ConcertResourceIT {
      * Tests that a 401 error is returned when an incorrect password is supplied on login, and makes sure that
      * no authentication token is generated.
      */
-    @Test
+    @Ignore
+@Test
     public void testFailedLogin_IncorrectPassword() {
         // Log in
         Response loginResponse = login(client, "testuser", "pa5word");
@@ -257,7 +273,8 @@ public class ConcertResourceIT {
      * tests that a 200 response is returned when the correct username and password are supplied on login, and that
      * a cookie named "auth" is generated.
      */
-    @Test
+    @Ignore
+@Test
     public void testSuccessfulLogin() {
         // Log in
         Response loginResponse = login(client, "testuser", "pa55word");
@@ -271,7 +288,8 @@ public class ConcertResourceIT {
      * Tests that a 401 error is returned when attempting to book while not logged in, and that no booking is actually
      * made.
      */
-    @Test
+    @Ignore
+@Test
     public void testAttemptUnauthorizedBooking() {
 
         List<String> seatLabels = Arrays.asList("C5", "C6");
@@ -299,7 +317,8 @@ public class ConcertResourceIT {
      * Tests that a 201 response is returned when making a valid authorized booking, and that the requested seats now
      * are correctly reported as being booked.
      */
-    @Test
+    @Ignore
+@Test
     public void testMakeSuccessfulBooking() {
 
         // Log in
@@ -327,7 +346,8 @@ public class ConcertResourceIT {
      * Tests that a 201 response is returned when making a valid authorized booking, and that the link returned
      * allows the user to correctly navigate to the new booking.
      */
-    @Test
+    @Ignore
+@Test
     public void testGetOwnBookingById() {
 
         // Log in
@@ -355,7 +375,8 @@ public class ConcertResourceIT {
      * Tests that a 403 error is returned when trying to access a booking of another user,
      * even if the correct id is known.
      */
-    @Test
+    @Ignore
+@Test
     public void testAttemptGetOthersBookingById() {
 
         // Log in
@@ -386,7 +407,8 @@ public class ConcertResourceIT {
      * Test that multiple users are each able to access all of their own bookings. No user should be able to see
      * the bookings of any other user.
      */
-    @Test
+    @Ignore
+@Test
     public void testGetAllBookingsForUser() {
 
         // Log in as user 1
@@ -442,7 +464,8 @@ public class ConcertResourceIT {
     /**
      * Tests that a 401 error is returned when trying to access any booking information while not authenticated.
      */
-    @Test
+    @Ignore
+@Test
     public void testAttemptGetAllBookingsWhenNotAuthenticated() {
         Response response = client.target(WEB_SERVICE_URI + "/bookings").request().get();
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
@@ -451,7 +474,8 @@ public class ConcertResourceIT {
     /**
      * Tests that a 400 error is returned when trying to book seats for a date on which a given concert is not scheduled.
      */
-    @Test
+    @Ignore
+@Test
     public void testAttemptBookingWrongDate() {
         // Log in
         login(client, "testuser", "pa55word");
@@ -466,7 +490,8 @@ public class ConcertResourceIT {
     /**
      * Tests that a 400 error is returned when trying to book seats for a nonexistent concert.
      */
-    @Test
+    @Ignore
+@Test
     public void testAttemptBookingIncorrectConcertId() {
         // Log in
         login(client, "testuser", "pa55word");
@@ -482,7 +507,8 @@ public class ConcertResourceIT {
      * Tests that a 403 error is returned when trying to book a set of seats, all of which have already been booked.
      * Also makes sure that the original booker of those seats retains those seats, and the new user does not.
      */
-    @Test
+    @Ignore
+@Test
     public void testAttemptDoubleBooking_SameSeats() {
         // Log in as user 1
         login(client, "testuser", "pa55word");
@@ -529,7 +555,8 @@ public class ConcertResourceIT {
      * Also makes sure that the original user retains their booking, and that the second booking is not partially
      * completed (i.e. NO seats from the second booking request should be booked, even if some of them are available).
      */
-    @Test
+    @Ignore
+@Test
     public void testAttemptDoubleBooking_OverlappingSeats() {
         // Log in as user 1
         login(client, "testuser", "pa55word");
@@ -585,7 +612,8 @@ public class ConcertResourceIT {
     /**
      * Tests that the booked seats for a particular concert on a particular date can be queried.
      */
-    @Test
+    @Ignore
+@Test
     public void testGetBookedSeatsForDate() {
         // Log in
         login(client, "testuser", "pa55word");
@@ -609,7 +637,8 @@ public class ConcertResourceIT {
     /**
      * Tests that the unbooked seats for a particular concert on a particular date can be queried.
      */
-    @Test
+    @Ignore
+@Test
     public void testGetUnbookedSeatsForDate() {
         // Log in
         login(client, "testuser", "pa55word");
@@ -636,7 +665,8 @@ public class ConcertResourceIT {
     /**
      * Tests that all seats for a particular concert on a particular date can be queried.
      */
-    @Test
+    @Ignore
+@Test
     public void testGetAllSeatsForDate() {
         // Log in
         login(client, "testuser", "pa55word");
@@ -667,6 +697,7 @@ public class ConcertResourceIT {
 //    /**
 //     * Tests that a 401 error is returned when trying to make a subscription while not authenticated.
 //     */
+//    @Ignore
 //    @Test
 //    public void testUnauthorizedSubscription() throws InterruptedException, ExecutionException, TimeoutException {
 //        // Attempt to subscribe
@@ -684,6 +715,7 @@ public class ConcertResourceIT {
 //    /**
 //     * Tests that a 400 error is returned when trying to make a subscription for a nonexistent concert.
 //     */
+//    @Ignore
 //    @Test
 //    public void testBadSubscription_NonexistentConcert() throws InterruptedException, ExecutionException, TimeoutException {
 //
@@ -693,6 +725,7 @@ public class ConcertResourceIT {
 //    /**
 //     * Tests that a 400 error is returned when trying to make a subscription for a nonexistent date.
 //     */
+//    @Ignore
 //    @Test
 //    public void testBadSubscription_NonexistentDate() throws InterruptedException, ExecutionException, TimeoutException {
 //
@@ -719,6 +752,7 @@ public class ConcertResourceIT {
 //     * then notified when the conditions of their subscription are met. The subscribers won't be notified beforehand
 //     * by mistake.
 //     */
+//    @Ignore
 //    @Test
 //    public void testSubscription() throws ExecutionException, InterruptedException {
 //
@@ -767,6 +801,7 @@ public class ConcertResourceIT {
 //     * Tests that, if subscribed to notifications about a particular concert / date, a user won't receive notifications
 //     * about unrelated concerts / dates.
 //     */
+//    @Ignore
 //    @Test
 //    public void testSubscriptionForDifferentConcert() throws ExecutionException, InterruptedException {
 //

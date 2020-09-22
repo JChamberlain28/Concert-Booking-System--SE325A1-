@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.Fetch;
 import se325.assignment01.concert.common.dto.PerformerDTO;
 import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
 import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
@@ -41,8 +42,7 @@ public class Concert {
             name = "CONCERT_PERFORMER",
             joinColumns=@JoinColumn(name = "CONCERT_ID"),
             inverseJoinColumns=@JoinColumn(name = "PERFORMER_ID"))
-   // private Set<Performer> performers = new HashSet<>(); //TODO: change back to arraylist?
-    private List<Performer> performers = new ArrayList<>();
+    private Set<Performer> performers = new HashSet<>(); //TODO: change back to arraylist?
     public Concert() {
     }
 
@@ -99,11 +99,11 @@ public class Concert {
         this.dates = dates;
     }
 
-    public List<Performer> getPerformers() {
-        return new ArrayList<>(performers);
+    public Set<Performer> getPerformers() {
+        return performers;
     }
 
-    public void setPerformers(List<Performer> performers) { this.performers = performers; }//new HashSet<>(performers);
+    public void setPerformers(Set<Performer> performers) { this.performers = performers; }
 
 
 

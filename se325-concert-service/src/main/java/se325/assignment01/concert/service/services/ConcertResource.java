@@ -2,9 +2,15 @@ package se325.assignment01.concert.service.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se325.assignment01.concert.common.dto.ConcertDTO;
+import se325.assignment01.concert.common.dto.ConcertSummaryDTO;
 import se325.assignment01.concert.service.common.Config;
 import se325.assignment01.concert.service.domain.Concert;
+import se325.assignment01.concert.service.mapper.ConcertMapper;
+import se325.assignment01.concert.service.mapper.ConcertSummaryMapper;
+import se325.assignment01.concert.service.mapper.PerformerMapper;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
@@ -18,7 +24,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-@Path("/concerts")
+import java.util.stream.Collectors;
+
+@Path("/concert-service/concerts")
 public class ConcertResource {
 
 
@@ -35,7 +43,7 @@ public class ConcertResource {
     public Response retrieveConcert(@PathParam("id") long id, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
 
 
-//
+
 
         Concert concert = null;
         // Acquire an EntityManager (creating a new persistence context).
@@ -44,58 +52,130 @@ public class ConcertResource {
             em.getTransaction().begin();
             concert = em.find(Concert.class, id);
             em.getTransaction().commit();
+
+
+            if (concert == null) {
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            } else {
+                Response.ResponseBuilder builder = Response.ok(ConcertMapper.convertToDTO(concert));
+                //addCookie(builder, clientId);
+                return builder.build();
+
+            }
         } finally {
             // When you're done using the EntityManager, close it to free up resources.
             em.close();
         }
 
-        if (concert == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        } else {
-            Response.ResponseBuilder builder = Response.ok(concert);
-            addCookie(builder, clientId);
-            return builder.build();
 
+
+
+    }
+
+
+
+
+
+    @GET
+    @Produces({"application/json"})
+    @Consumes({"application/json"}) // TODO: may not need cookie
+    public Response retrieveAllConcerts(@CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
+
+        List<Concert> concerts;
+
+
+        // get EntityManager for transaction
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+        try {
+            concerts = getConcertsFromDB(em);
+            // Converts all concerts in the list of concerts to concertDTO's and adds them to a list collection.
+            // This is then wrapped in a GenericEntity.
+            GenericEntity<List<ConcertDTO>> entity = new GenericEntity<List<ConcertDTO>>(concerts.stream()
+                    .map(concert -> ConcertMapper.convertToDTO(concert)).collect(Collectors.toList())) {
+            };
+            Response.ResponseBuilder builder = Response.ok(entity);
+            //addCookie(builder, clientId);
+
+            return builder.build();
+        } finally {
+            em.close();
         }
 
 
     }
 
     @GET
+    @Path("/summaries")
     @Produces({"application/json"})
-    @Consumes({"application/json"})
-    public Response retrieveConcerts(@QueryParam("start") long start, @QueryParam("size") int size, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
-        // The Response object should store an ArrayList<Concert> entity. The
-        // ArrayList can be empty depending on the start and size arguments,
-        // and Concerts stored.
-        //
-        // Because of type erasure with Java Generics, any generically typed
-        // entity needs to be wrapped by a javax.ws.rs.core.GenericEntity that
-        // stores the generic type information. Hence to add an ArrayList as a
-        // Response object's entity, you should use the following code:
-        //
+    @Consumes({"application/json"}) // TODO: may not need cookie
+    public Response retrieveAllConcertSummaries(@CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
+
         List<Concert> concerts;
 
 
-        // Acquire an EntityManager (creating a new persistence context).
+        // get EntityManager for transaction
         EntityManager em = PersistenceManager.instance().createEntityManager();
-        try {// dont need transaction begin and commit as its only reading DB
-            em.getTransaction().begin();
-            TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c where c.id >= " + start + " and c.id < " + size + start, Concert.class);
-            concerts = concertQuery.getResultList();
-            em.getTransaction().commit();
+        try {
+            concerts = getConcertsFromDB(em);
+
+            // Converts all concerts in the list of concerts to concertDTO's and adds them to a list collection.
+            // This is then wrapped in a GenericEntity.
+            GenericEntity<List<ConcertSummaryDTO>> entity = new GenericEntity<List<ConcertSummaryDTO>>(concerts.stream()
+                    .map(concert -> ConcertSummaryMapper.convertToDTO(concert)).collect(Collectors.toList())) {
+            };
+            Response.ResponseBuilder builder = Response.ok(entity);
+            //addCookie(builder, clientId);
+
+            return builder.build();
         } finally {
-            // When you're done using the EntityManager, close it to free up resources.
             em.close();
         }
 
-        GenericEntity<List<Concert>> entity = new GenericEntity<List<Concert>>(concerts) {
-        };
-        Response.ResponseBuilder builder = Response.ok(entity);
-        addCookie(builder, clientId);
 
-        return builder.build();
     }
+
+
+    private List<Concert> getConcertsFromDB(EntityManager em){
+        em.getTransaction().begin();
+        TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c", Concert.class);
+        List<Concert> concerts = concertQuery.getResultList();
+        em.getTransaction().commit();
+        return concerts;
+    }
+
+// DONT NEED, only need get all as its not in spec
+//    @GET
+//    @Produces({"application/json"})
+//    @Consumes({"application/json"})
+//    public Response retrieveConcerts(@QueryParam("start") long start, @QueryParam("size") int size, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
+//
+//        List<Concert> concerts;
+//
+//
+//        // get EntityManager for transaction
+//        EntityManager em = PersistenceManager.instance().createEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//            TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c where c.id >= " + start + " and c.id < " + size + start, Concert.class);
+//            concerts = concertQuery.getResultList();
+//            em.getTransaction().commit();
+//
+//
+//            // Converts all concerts in the list of concerts to concertDTO's and adds them to a list collection.
+//            // This is then wrapped in a GenericEntity.
+//            GenericEntity<List<ConcertDTO>> entity = new GenericEntity<List<ConcertDTO>>(concerts.stream()
+//                    .map(concert -> ConcertMapper.convertToDTO(concert)).collect(Collectors.toList())) {
+//            };
+//            Response.ResponseBuilder builder = Response.ok(entity);
+//            //addCookie(builder, clientId);
+//
+//            return builder.build();
+//        } finally {
+//            em.close();
+//        }
+//
+//
+//    }
 
     @POST
     @Produces({"application/json"})
