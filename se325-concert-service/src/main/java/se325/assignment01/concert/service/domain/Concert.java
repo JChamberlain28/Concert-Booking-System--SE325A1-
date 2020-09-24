@@ -5,23 +5,14 @@ import java.util.*;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.hibernate.annotations.Fetch;
-import se325.assignment01.concert.common.dto.PerformerDTO;
-import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
-import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
 
 @Entity
 @Table(name ="CONCERTS")
 public class Concert {
 
-    // TODO Implement this class.
+    // TODO Is this a generated value, cos one of the rest methods persists then gets generated ID (is it by default?)
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "TITLE")
@@ -37,7 +28,7 @@ public class Concert {
     private Set<LocalDateTime> dates = new HashSet<>(); //TODO: should autogen CONCERT_DATES table (check tat hashset makes date the pk)
 
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}) // TODO: is it many to many, and oes cascade delete delete a performer even if it is also referd to by another concert
+    @ManyToMany(cascade = CascadeType.PERSIST) // TODO: is it many to many, and oes cascade delete delete a performer even if it is also referd to by another concert
     @JoinTable(
             name = "CONCERT_PERFORMER",
             joinColumns=@JoinColumn(name = "CONCERT_ID"),

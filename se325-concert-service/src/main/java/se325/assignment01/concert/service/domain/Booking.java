@@ -2,19 +2,29 @@ package se325.assignment01.concert.service.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
 import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name ="BOOKINGS")
 public class Booking {
+
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private long concertId;
     private LocalDateTime date;
-    private Set<Seat> seats = new HashSet<>();
 
+    //TODO, idk if this is true, or many to many. I think a unique set of seats made per concert tho.
+    @OneToMany
+    private Set<Seat> seats = new HashSet<>();
     public Booking() {
     }
 
@@ -24,6 +34,7 @@ public class Booking {
         this.seats = seats;
     }
 
+
     public long getConcertId() {
         return concertId;
     }
@@ -32,8 +43,6 @@ public class Booking {
         this.concertId = concertId;
     }
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public LocalDateTime getDate() {
         return date;
     }
@@ -50,4 +59,21 @@ public class Booking {
         this.seats = seats;
     }
 
+    public Long getId(){ return id; }
+
+
+    // bookings are equal if they have the same ID
+    // (used for .contains() on a booking set to find if authorised user has a certain booking)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Booking booking = (Booking) o;
+
+        return new EqualsBuilder()
+                .append(id, booking.id)
+                .isEquals();
+    }
 }

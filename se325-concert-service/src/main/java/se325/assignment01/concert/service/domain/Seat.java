@@ -12,9 +12,11 @@ import java.util.Objects;
 @Entity
 public class Seat {
 
+	// TODO how do we show platinum gold etc
+
 	@Id
 	@GeneratedValue
-	private int id;
+	private Long id;
 	@Column(name = "LABEL")
 	private String label;
 	@Column(name = "PRICE")
@@ -48,6 +50,11 @@ public class Seat {
 	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
+
+	public boolean getIsBooked() { return isBooked; }
+
+	public void setIsBooked(boolean isBooked) { this.isBooked = isBooked; }
+
 
 	@Override
 	public String toString() {

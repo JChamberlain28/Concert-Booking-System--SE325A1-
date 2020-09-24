@@ -5,6 +5,7 @@ import se325.assignment01.concert.common.dto.*;
 import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
 import se325.assignment01.concert.common.types.Genre;
 
+import javax.persistence.Id;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -186,7 +187,7 @@ public class ConcertResourceIT {
      * a given id.
      */
 
-    @Ignore
+
 @Test
     public void testGetSinglePerformer() {
 
@@ -202,7 +203,7 @@ public class ConcertResourceIT {
      * Tests that a 404 response is returned when requesting a nonexistent performer.
      */
 
-    @Ignore
+
 @Test
     public void testGetNonExistentPerformer() {
 
@@ -215,7 +216,7 @@ public class ConcertResourceIT {
     /**
      * Tests that all performers are returned when requested.
      */
-    @Ignore
+
 @Test
     public void testGetAllPerformers() {
 
@@ -247,7 +248,7 @@ public class ConcertResourceIT {
      * Tests that a 401 error is returned when an incorrect username is supplied on login, and makes sure that
      * no authentication token is generated.
      */
-    @Ignore
+
 @Test
     public void testFailedLogin_IncorrectUsername() {
         // Log in
@@ -260,7 +261,7 @@ public class ConcertResourceIT {
      * Tests that a 401 error is returned when an incorrect password is supplied on login, and makes sure that
      * no authentication token is generated.
      */
-    @Ignore
+
 @Test
     public void testFailedLogin_IncorrectPassword() {
         // Log in
@@ -273,7 +274,7 @@ public class ConcertResourceIT {
      * tests that a 200 response is returned when the correct username and password are supplied on login, and that
      * a cookie named "auth" is generated.
      */
-    @Ignore
+
 @Test
     public void testSuccessfulLogin() {
         // Log in
@@ -288,7 +289,7 @@ public class ConcertResourceIT {
      * Tests that a 401 error is returned when attempting to book while not logged in, and that no booking is actually
      * made.
      */
-    @Ignore
+
 @Test
     public void testAttemptUnauthorizedBooking() {
 
@@ -317,7 +318,7 @@ public class ConcertResourceIT {
      * Tests that a 201 response is returned when making a valid authorized booking, and that the requested seats now
      * are correctly reported as being booked.
      */
-    @Ignore
+
 @Test
     public void testMakeSuccessfulBooking() {
 
@@ -346,7 +347,7 @@ public class ConcertResourceIT {
      * Tests that a 201 response is returned when making a valid authorized booking, and that the link returned
      * allows the user to correctly navigate to the new booking.
      */
-    @Ignore
+
 @Test
     public void testGetOwnBookingById() {
 
@@ -375,7 +376,7 @@ public class ConcertResourceIT {
      * Tests that a 403 error is returned when trying to access a booking of another user,
      * even if the correct id is known.
      */
-    @Ignore
+
 @Test
     public void testAttemptGetOthersBookingById() {
 
@@ -464,7 +465,7 @@ public class ConcertResourceIT {
     /**
      * Tests that a 401 error is returned when trying to access any booking information while not authenticated.
      */
-    @Ignore
+@Ignore
 @Test
     public void testAttemptGetAllBookingsWhenNotAuthenticated() {
         Response response = client.target(WEB_SERVICE_URI + "/bookings").request().get();

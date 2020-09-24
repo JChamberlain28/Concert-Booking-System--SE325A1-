@@ -15,12 +15,18 @@ import java.util.Set;
 @ApplicationPath("/services")
 public class ConcertApplication extends Application {
 
+    // TODO: REMOVE ANDREWS COMMENTS! change to mine
+
     private Set<Object> singletons = new HashSet<>();
     private Set<Class<?>> classes = new HashSet<>();
 
     public ConcertApplication() {
         classes.add(TestResource.class);
         classes.add(ConcertResource.class);
+        classes.add(PerformerResource.class);
+        classes.add(LoginResource.class);
+        classes.add(BookingResource.class);
+        classes.add(SeatResource.class);
         singletons.add(PersistenceManager.instance());
 
         ConcertUtils.initConcerts();

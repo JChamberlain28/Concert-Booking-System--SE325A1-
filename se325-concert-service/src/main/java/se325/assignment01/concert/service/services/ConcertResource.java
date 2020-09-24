@@ -8,9 +8,6 @@ import se325.assignment01.concert.service.common.Config;
 import se325.assignment01.concert.service.domain.Concert;
 import se325.assignment01.concert.service.mapper.ConcertMapper;
 import se325.assignment01.concert.service.mapper.ConcertSummaryMapper;
-import se325.assignment01.concert.service.mapper.PerformerMapper;
-
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
@@ -20,10 +17,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Path("/concert-service/concerts")
@@ -32,15 +26,13 @@ public class ConcertResource {
 
     private static Logger LOGGER = LoggerFactory.getLogger(ConcertResource.class);
 
-    private Map<Long, Concert> concertDB = new ConcurrentHashMap<>();
-    private AtomicLong idCounter = new AtomicLong();
 
 
     @GET
     @Path("/{id}")
     @Produces({"application/json"})
     @Consumes({"application/json"})
-    public Response retrieveConcert(@PathParam("id") long id, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
+    public Response retrieveConcert(@PathParam("id") Long id, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
 
 
 
@@ -121,8 +113,7 @@ public class ConcertResource {
             // Converts all concerts in the list of concerts to concertDTO's and adds them to a list collection.
             // This is then wrapped in a GenericEntity.
             GenericEntity<List<ConcertSummaryDTO>> entity = new GenericEntity<List<ConcertSummaryDTO>>(concerts.stream()
-                    .map(concert -> ConcertSummaryMapper.convertToDTO(concert)).collect(Collectors.toList())) {
-            };
+                    .map(concert -> ConcertSummaryMapper.convertToDTO(concert)).collect(Collectors.toList())){};
             Response.ResponseBuilder builder = Response.ok(entity);
             //addCookie(builder, clientId);
 
@@ -134,7 +125,7 @@ public class ConcertResource {
 
     }
 
-
+    // helper method
     private List<Concert> getConcertsFromDB(EntityManager em){
         em.getTransaction().begin();
         TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c", Concert.class);
@@ -143,70 +134,37 @@ public class ConcertResource {
         return concerts;
     }
 
-// DONT NEED, only need get all as its not in spec
-//    @GET
+
+//    @POST
 //    @Produces({"application/json"})
 //    @Consumes({"application/json"})
-//    public Response retrieveConcerts(@QueryParam("start") long start, @QueryParam("size") int size, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
 //
-//        List<Concert> concerts;
+//    public Response createConcert(Concert concert, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
 //
-//
-//        // get EntityManager for transaction
+//        // Reminder: You won't need to annotate the "concert" argument above - arguments without annotations are
+//        // assumed by JAX-RS to come from the HTTP request body.
+//        //Long count = idCounter.getAndIncrement();
+//        //concertDB.put(count, concert);
+//        String concertId;
+//        // Acquire an EntityManager (creating a new persistence context).
 //        EntityManager em = PersistenceManager.instance().createEntityManager();
-//        try {
+//        try {// dont need transaction begin and commit as its only reading DB
 //            em.getTransaction().begin();
-//            TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c where c.id >= " + start + " and c.id < " + size + start, Concert.class);
-//            concerts = concertQuery.getResultList();
+//            em.persist(concert);
+//            em.flush();
+//            concertId = concert.getId().toString();
 //            em.getTransaction().commit();
-//
-//
-//            // Converts all concerts in the list of concerts to concertDTO's and adds them to a list collection.
-//            // This is then wrapped in a GenericEntity.
-//            GenericEntity<List<ConcertDTO>> entity = new GenericEntity<List<ConcertDTO>>(concerts.stream()
-//                    .map(concert -> ConcertMapper.convertToDTO(concert)).collect(Collectors.toList())) {
-//            };
-//            Response.ResponseBuilder builder = Response.ok(entity);
-//            //addCookie(builder, clientId);
-//
-//            return builder.build();
 //        } finally {
+//            // When you're done using the EntityManager, close it to free up resources.
 //            em.close();
 //        }
 //
 //
+//        Response.ResponseBuilder builder = Response.created(URI.create("/concerts/" + concertId));
+//        addCookie(builder, clientId);
+//        return builder.build(); // TODO: check content of concert before adding, throw error
+//
 //    }
-
-    @POST
-    @Produces({"application/json"})
-    @Consumes({"application/json"})
-
-    public Response createConcert(Concert concert, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
-
-        // Reminder: You won't need to annotate the "concert" argument above - arguments without annotations are
-        // assumed by JAX-RS to come from the HTTP request body.
-        //Long count = idCounter.getAndIncrement();
-        //concertDB.put(count, concert);
-        String concertId;
-        // Acquire an EntityManager (creating a new persistence context).
-        EntityManager em = PersistenceManager.instance().createEntityManager();
-        try {// dont need transaction begin and commit as its only reading DB
-            em.getTransaction().begin();
-            em.persist(concert);
-            em.flush();
-            concertId = concert.getId().toString();
-            em.getTransaction().commit();
-        } finally {
-            // When you're done using the EntityManager, close it to free up resources.
-            em.close();
-        }
-
-
-        Response.ResponseBuilder builder = Response.created(URI.create("/concerts/" + concertId));
-        addCookie(builder, clientId);
-        return builder.build(); // TODO: check content of concert before adding, throw error
-
-    }
 
     @DELETE
     @Path("/{id}")
@@ -235,7 +193,7 @@ public class ConcertResource {
     }
 
     @PUT
-    public Response updateConcerts(Concert concert) {
+    public Response updateConcert(Concert concert) {
 
 
         // Acquire an EntityManager (creating a new persistence context).

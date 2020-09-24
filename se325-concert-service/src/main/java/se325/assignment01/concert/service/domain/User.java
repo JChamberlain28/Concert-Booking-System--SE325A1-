@@ -2,11 +2,13 @@ package se325.assignment01.concert.service.domain;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import se325.assignment01.concert.common.dto.UserDTO;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.ws.rs.core.Cookie;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -22,6 +24,12 @@ public class User {
 
 
     private int version;
+
+    @Column(name = "TOKEN")
+    private String userToken;
+
+    @OneToMany
+    Set<Booking> usersBookings = new HashSet<>();
 
     protected User() {
     }
@@ -40,6 +48,39 @@ public class User {
     public String getPassword() {
         return password;
     }
+
+
+    // not following java beans but dont need to as this is not a DTO, so abstracting token check and set
+
+    public void setToken(Cookie token){
+        userToken = token.getValue();
+    }
+
+    public void addUserBooking(Booking booking){
+        this.usersBookings.add(booking);
+    }
+
+    public Set<Booking> getUserBookings(){
+        return this.usersBookings;
+    }
+
+    public boolean hasBooking(Booking booking){
+        for (Booking b : usersBookings){
+            if (b.getId().equals(booking.getId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+//    // returns true if the provided the cookie token is associated with this user
+//    public boolean tokenMatch(Cookie token){
+//        if (userToken == null){
+//            return false;
+//        }
+//        return userToken.equals(token.getValue());
+//    }
 
 
     @Override
