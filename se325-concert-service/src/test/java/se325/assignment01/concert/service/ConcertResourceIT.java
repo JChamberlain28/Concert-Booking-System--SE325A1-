@@ -465,7 +465,7 @@ public class ConcertResourceIT {
     /**
      * Tests that a 401 error is returned when trying to access any booking information while not authenticated.
      */
-@Ignore
+
 @Test
     public void testAttemptGetAllBookingsWhenNotAuthenticated() {
         Response response = client.target(WEB_SERVICE_URI + "/bookings").request().get();
@@ -475,7 +475,7 @@ public class ConcertResourceIT {
     /**
      * Tests that a 400 error is returned when trying to book seats for a date on which a given concert is not scheduled.
      */
-    @Ignore
+
 @Test
     public void testAttemptBookingWrongDate() {
         // Log in
@@ -491,7 +491,7 @@ public class ConcertResourceIT {
     /**
      * Tests that a 400 error is returned when trying to book seats for a nonexistent concert.
      */
-    @Ignore
+
 @Test
     public void testAttemptBookingIncorrectConcertId() {
         // Log in
@@ -508,7 +508,7 @@ public class ConcertResourceIT {
      * Tests that a 403 error is returned when trying to book a set of seats, all of which have already been booked.
      * Also makes sure that the original booker of those seats retains those seats, and the new user does not.
      */
-    @Ignore
+
 @Test
     public void testAttemptDoubleBooking_SameSeats() {
         // Log in as user 1
@@ -556,7 +556,7 @@ public class ConcertResourceIT {
      * Also makes sure that the original user retains their booking, and that the second booking is not partially
      * completed (i.e. NO seats from the second booking request should be booked, even if some of them are available).
      */
-    @Ignore
+
 @Test
     public void testAttemptDoubleBooking_OverlappingSeats() {
         // Log in as user 1
@@ -613,7 +613,7 @@ public class ConcertResourceIT {
     /**
      * Tests that the booked seats for a particular concert on a particular date can be queried.
      */
-    @Ignore
+
 @Test
     public void testGetBookedSeatsForDate() {
         // Log in
@@ -666,7 +666,7 @@ public class ConcertResourceIT {
     /**
      * Tests that all seats for a particular concert on a particular date can be queried.
      */
-    @Ignore
+
 @Test
     public void testGetAllSeatsForDate() {
         // Log in

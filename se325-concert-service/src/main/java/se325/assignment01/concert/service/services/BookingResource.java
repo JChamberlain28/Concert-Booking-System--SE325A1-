@@ -2,7 +2,9 @@ package se325.assignment01.concert.service.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se325.assignment01.concert.common.dto.BookingDTO;
 import se325.assignment01.concert.common.dto.BookingRequestDTO;
+import se325.assignment01.concert.common.dto.ConcertSummaryDTO;
 import se325.assignment01.concert.common.dto.UserDTO;
 import se325.assignment01.concert.service.common.Config;
 import se325.assignment01.concert.service.domain.Booking;
@@ -11,18 +13,22 @@ import se325.assignment01.concert.service.domain.Seat;
 import se325.assignment01.concert.service.domain.User;
 import se325.assignment01.concert.service.mapper.BookingMapper;
 import se325.assignment01.concert.service.mapper.ConcertMapper;
+import se325.assignment01.concert.service.mapper.ConcertSummaryMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.awt.print.Book;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/concert-service/bookings")
 public class BookingResource {
@@ -46,6 +52,8 @@ public class BookingResource {
 
             // check concert exists and get it
             Concert concert = em.find(Concert.class, br.getConcertId());
+
+
 
             if (concert == null){
                 em.getTransaction().rollback();
@@ -127,23 +135,6 @@ public class BookingResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("UserGotBooking: " + authUser.hasBooking(booking));
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
-            System.out.println("|");
 
 
             if (!authUser.hasBooking(booking)){
@@ -152,6 +143,39 @@ public class BookingResource {
             }
 
             Response.ResponseBuilder response = Response.ok(BookingMapper.convertToDTO(booking));
+            return response.build();
+
+        } finally {
+            // When you're done using the EntityManager, close it to free up resources.
+            em.close();
+        }
+
+
+
+
+
+
+    }
+
+
+    @GET
+    @Produces({"application/json"})
+    @Consumes({"application/json"})
+    public Response retrieveBookingsForUser(@CookieParam(Config.CLIENT_COOKIE) Cookie auth) {
+
+
+        // Acquire an EntityManager (creating a new persistence context).
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+        try {// dont need transaction begin and commit as its only reading DB
+            em.getTransaction().begin();
+
+            // checks cookie authorisation and returns the user that is logged in
+            User authUser = getAuthUser(auth, em);
+
+            List<Booking> bookings = new ArrayList<>(authUser.getUserBookings());
+            GenericEntity<List<BookingDTO>> entity = new GenericEntity<List<BookingDTO>>(bookings.stream()
+                    .map(booking -> BookingMapper.convertToDTO(booking)).collect(Collectors.toList())){};
+            Response.ResponseBuilder response = Response.ok(entity);
             return response.build();
 
         } finally {
