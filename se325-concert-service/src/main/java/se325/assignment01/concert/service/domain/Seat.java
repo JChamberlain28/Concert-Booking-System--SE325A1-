@@ -25,6 +25,8 @@ public class Seat {
 	private boolean isBooked;
 	@Column(name = "DATE")
 	private LocalDateTime date;
+	@Version
+	private int version;
 
 	public Seat() {}
 

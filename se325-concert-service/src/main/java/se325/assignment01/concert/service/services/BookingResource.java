@@ -13,6 +13,7 @@ import se325.assignment01.concert.service.mapper.ConcertMapper;
 import se325.assignment01.concert.service.mapper.ConcertSummaryMapper;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
@@ -71,7 +72,8 @@ public class BookingResource {
             //TODO might be slow cos we doing cartesian product of dates and labels in query
             //gets all seats from the booking request
             TypedQuery<Seat> seatsQuery = em.createQuery("select s from Seat s where s.label in :labels and s.date in :dates", Seat.class)
-                    .setParameter("labels", br.getSeatLabels()).setParameter("dates", br.getDate());
+                    .setParameter("labels", br.getSeatLabels()).setParameter("dates", br.getDate())
+                    .setLockMode(LockModeType.OPTIMISTIC);
             List<Seat> seatsResults = seatsQuery.getResultList();
 
             if (seatsResults.isEmpty()){

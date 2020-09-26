@@ -7,6 +7,7 @@ import se325.assignment01.concert.service.common.Config;
 import se325.assignment01.concert.service.domain.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Cookie;
@@ -35,7 +36,8 @@ public class LoginResource {
         try {// dont need transaction begin and commit as its only reading DB
             em.getTransaction().begin();
             TypedQuery<User> usersQuery = em.createQuery("select u from User u where u.username='" + username
-                    + "' and u.password='" + password + "'", User.class);
+                    + "' and u.password='" + password + "'", User.class)
+                    .setLockMode(LockModeType.OPTIMISTIC);
             userResults = usersQuery.getResultList();
 
 

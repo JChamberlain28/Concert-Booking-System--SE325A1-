@@ -27,8 +27,8 @@ public class Concert {
     @Column(name = "DATE")
     private Set<LocalDateTime> dates = new HashSet<>(); //TODO: should autogen CONCERT_DATES table (check tat hashset makes date the pk)
 
-
-    @ManyToMany(cascade = CascadeType.PERSIST) // TODO: is it many to many, and oes cascade delete delete a performer even if it is also referd to by another concert
+    // dont need to cascade remove as the API doesnt support removing a performer
+    @ManyToMany//(cascade = CascadeType.PERSIST) // TODO: is it many to many, and oes cascade delete delete a performer even if it is also referd to by another concert
     @JoinTable(
             name = "CONCERT_PERFORMER",
             joinColumns=@JoinColumn(name = "CONCERT_ID"),

@@ -22,8 +22,10 @@ public class Booking {
     private long concertId;
     private LocalDateTime date;
 
-    //TODO, idk if this is true, or many to many. I think a unique set of seats made per concert tho.
-    @OneToMany
+    //TODO: cascade merge?
+    // Eager fetch here as we access properties of all seats to set to booked
+    // (Assume that the original query to get seats is eager due to it then being put into this set)
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<Seat> seats = new HashSet<>();
     public Booking() {
     }

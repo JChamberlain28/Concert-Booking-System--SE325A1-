@@ -20,7 +20,7 @@ public class User {
     @Id
     private Long id;
 
-
+    @Version
     private int version;
 
     @Column(name = "TOKEN")
