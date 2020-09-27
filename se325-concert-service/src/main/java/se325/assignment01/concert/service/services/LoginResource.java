@@ -31,10 +31,14 @@ public class LoginResource {
         String password = user.getPassword();
 
         List<User> userResults = null;
-        // Acquire an EntityManager (creating a new persistence context).
+        // get EntityManager for transaction
         EntityManager em = PersistenceManager.instance().createEntityManager();
-        try {// dont need transaction begin and commit as its only reading DB
+        try {
             em.getTransaction().begin();
+
+            // Using optimistic locking due to potential for a user to login at the same time on 2 different devices
+            // (only one should be successful). Locking is needed as the updated auth token associated with the user
+            // is stored in the User object, hence there are writes that need protecting.
             TypedQuery<User> usersQuery = em.createQuery("select u from User u where u.username='" + username
                     + "' and u.password='" + password + "'", User.class)
                     .setLockMode(LockModeType.OPTIMISTIC);
@@ -44,26 +48,29 @@ public class LoginResource {
 
 
             if (userResults.isEmpty()) {
+                // login failed
                 em.getTransaction().rollback();
                 throw new WebApplicationException(Response.Status.UNAUTHORIZED);
             } else {
+                // create new auth token for user
                 NewCookie cookie = makeCookie();
 
 
                 Response.ResponseBuilder builder = Response.ok();
-                if (cookie != null) { // this is entered if the client didnt have a cookie (clientId = null)
-                    builder.cookie(cookie);
-                    // persist record of cookie/token in user class in database
-                    userResults.get(0).setToken(cookie);
 
-                }
+                // add auth token to HTTP response
+                builder.cookie(cookie);
+                // persist record of cookie/token in user class in database
+                userResults.get(0).setToken(cookie);
+                em.merge(userResults.get(0));
+
+
                 em.getTransaction().commit();
 
                 return builder.build();
 
             }
         } finally {
-            // When you're done using the EntityManager, close it to free up resources.
             em.close();
         }
 

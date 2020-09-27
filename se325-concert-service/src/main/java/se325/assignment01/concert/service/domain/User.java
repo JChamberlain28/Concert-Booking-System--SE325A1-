@@ -20,6 +20,7 @@ public class User {
     @Id
     private Long id;
 
+    // versioning for optimistic locking
     @Version
     private int version;
 
@@ -48,7 +49,7 @@ public class User {
     }
 
 
-    // not following java beans but dont need to as this is not a DTO, so abstracting token check and set
+
 
     public void setToken(Cookie token){
         userToken = token.getValue();
@@ -63,10 +64,9 @@ public class User {
     }
 
     public boolean hasBooking(Booking booking){
-        for (Booking b : usersBookings){
-            if (b.getId().equals(booking.getId())){
-                return true;
-            }
+        // using overridden equals() method in the User class
+        if (usersBookings.contains(booking)){
+            return true;
         }
         return false;
     }

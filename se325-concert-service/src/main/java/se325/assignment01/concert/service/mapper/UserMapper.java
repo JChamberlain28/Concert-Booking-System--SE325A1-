@@ -8,7 +8,7 @@ public class UserMapper {
     public static UserDTO convertToDTO(User user){
 
 
-        // create dto using field info contained in a user object
+        // create user dto using field info contained in a user object
         return new UserDTO(user.getUsername(), user.getPassword());
     }
 }

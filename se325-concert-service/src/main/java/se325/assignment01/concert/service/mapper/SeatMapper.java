@@ -6,7 +6,7 @@ import se325.assignment01.concert.service.domain.Seat;
 public class SeatMapper {
     public static SeatDTO convertToDTO(Seat seat){
 
-        // create dto using field info contained in a seat object
+        // create seat dto using field info contained in a seat object
         return new SeatDTO(seat.getLabel(), seat.getPrice());
 
     }

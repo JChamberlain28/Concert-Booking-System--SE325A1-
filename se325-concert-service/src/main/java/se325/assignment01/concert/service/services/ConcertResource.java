@@ -4,21 +4,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se325.assignment01.concert.common.dto.ConcertDTO;
 import se325.assignment01.concert.common.dto.ConcertSummaryDTO;
-import se325.assignment01.concert.service.common.Config;
 import se325.assignment01.concert.service.domain.Concert;
 import se325.assignment01.concert.service.mapper.ConcertMapper;
 import se325.assignment01.concert.service.mapper.ConcertSummaryMapper;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import java.net.URI;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
+/**
+ * This resource class contains all endpoints related to getting concert information as well as updating / deleting
+ * concerts.
+ */
 
 @Path("/concert-service/concerts")
 public class ConcertResource {
@@ -26,22 +26,29 @@ public class ConcertResource {
 
     private static Logger LOGGER = LoggerFactory.getLogger(ConcertResource.class);
 
-
+    /**
+     * This method is an endpoint that gets a concert by its id. It throws a WebApplicationException
+     * if there is no concert with the id specified.
+     * @param id - id of concert to retrieve
+     * @return - A concert data transfer object (converted to json)
+     */
 
     @GET
     @Path("/{id}")
     @Produces({"application/json"})
     @Consumes({"application/json"})
-    public Response retrieveConcert(@PathParam("id") Long id, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
+    public Response retrieveConcert(@PathParam("id") Long id) {
 
 
 
 
         Concert concert = null;
-        // Acquire an EntityManager (creating a new persistence context).
+        // get EntityManager for transaction
         EntityManager em = PersistenceManager.instance().createEntityManager();
-        try {// dont need transaction begin and commit as its only reading DB
+        try {
             em.getTransaction().begin();
+
+            // get matching concert
             concert = em.find(Concert.class, id);
             em.getTransaction().commit();
 
@@ -50,12 +57,10 @@ public class ConcertResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             } else {
                 Response.ResponseBuilder builder = Response.ok(ConcertMapper.convertToDTO(concert));
-                //addCookie(builder, clientId);
                 return builder.build();
 
             }
         } finally {
-            // When you're done using the EntityManager, close it to free up resources.
             em.close();
         }
 
@@ -65,13 +70,15 @@ public class ConcertResource {
     }
 
 
-
-
+    /**
+     * This method is an endpoint that gets all concerts.
+     * @return - A list of all concepts in a data transfer object format (converted to json)
+     */
 
     @GET
     @Produces({"application/json"})
-    @Consumes({"application/json"}) // TODO: may not need cookie
-    public Response retrieveAllConcerts(@CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
+    @Consumes({"application/json"})
+    public Response retrieveAllConcerts() {
 
         List<Concert> concerts;
 
@@ -80,13 +87,12 @@ public class ConcertResource {
         EntityManager em = PersistenceManager.instance().createEntityManager();
         try {
             concerts = getConcertsFromDB(em);
-            // Converts all concerts in the list of concerts to concertDTO's and adds them to a list collection.
+            // Converts all Concerts in the list of Concerts to ConcertDTO's and adds them to a list collection.
             // This is then wrapped in a GenericEntity.
             GenericEntity<List<ConcertDTO>> entity = new GenericEntity<List<ConcertDTO>>(concerts.stream()
                     .map(concert -> ConcertMapper.convertToDTO(concert)).collect(Collectors.toList())) {
             };
             Response.ResponseBuilder builder = Response.ok(entity);
-            //addCookie(builder, clientId);
 
             return builder.build();
         } finally {
@@ -96,11 +102,16 @@ public class ConcertResource {
 
     }
 
+    /**
+     * This method is an endpoint that gets all concert summaries (image and title only).
+     * @return - A list of concert summaries in a data transfer object format (converted to json)
+     */
+
     @GET
     @Path("/summaries")
     @Produces({"application/json"})
-    @Consumes({"application/json"}) // TODO: may not need cookie
-    public Response retrieveAllConcertSummaries(@CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
+    @Consumes({"application/json"})
+    public Response retrieveAllConcertSummaries() {
 
         List<Concert> concerts;
 
@@ -110,12 +121,12 @@ public class ConcertResource {
         try {
             concerts = getConcertsFromDB(em);
 
-            // Converts all concerts in the list of concerts to concertDTO's and adds them to a list collection.
+            // Converts all Concerts in the list of Concerts to ConcertSummaryDTO's and adds them to a list collection.
             // This is then wrapped in a GenericEntity.
             GenericEntity<List<ConcertSummaryDTO>> entity = new GenericEntity<List<ConcertSummaryDTO>>(concerts.stream()
                     .map(concert -> ConcertSummaryMapper.convertToDTO(concert)).collect(Collectors.toList())){};
             Response.ResponseBuilder builder = Response.ok(entity);
-            //addCookie(builder, clientId);
+
 
             return builder.build();
         } finally {
@@ -125,7 +136,13 @@ public class ConcertResource {
 
     }
 
-    // helper method
+    /**
+     * A helper method to get all concerts from the database. Used to reduce code duplication.
+     * @param em - Entity manager being used by the calling method
+     * @return - A list of Concert objects representing concerts at the theatre
+     */
+
+    // TODO: check if im closing transaction too early (look at other repo)
     private List<Concert> getConcertsFromDB(EntityManager em){
         em.getTransaction().begin();
         TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c", Concert.class);
@@ -135,142 +152,79 @@ public class ConcertResource {
     }
 
 
-//    @POST
+// DELETE?
+//
+//    @DELETE
+//    @Path("/{id}")
 //    @Produces({"application/json"})
 //    @Consumes({"application/json"})
+//    public Response delete(@PathParam("id") long id) {
 //
-//    public Response createConcert(Concert concert, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
-//
-//        // Reminder: You won't need to annotate the "concert" argument above - arguments without annotations are
-//        // assumed by JAX-RS to come from the HTTP request body.
-//        //Long count = idCounter.getAndIncrement();
-//        //concertDB.put(count, concert);
-//        String concertId;
-//        // Acquire an EntityManager (creating a new persistence context).
+//        Concert concert = null;
+//        // get EntityManager for transaction
 //        EntityManager em = PersistenceManager.instance().createEntityManager();
-//        try {// dont need transaction begin and commit as its only reading DB
+//        try {
 //            em.getTransaction().begin();
-//            em.persist(concert);
-//            em.flush();
-//            concertId = concert.getId().toString();
+//            concert = em.find(Concert.class, id);
+//            if (concert == null) {
+//                // no concert with matching ID
+//                em.getTransaction().rollback();
+//                throw new WebApplicationException(Response.Status.NOT_FOUND);
+//            }
+//            em.remove(concert);
 //            em.getTransaction().commit();
 //        } finally {
-//            // When you're done using the EntityManager, close it to free up resources.
 //            em.close();
 //        }
 //
-//
-//        Response.ResponseBuilder builder = Response.created(URI.create("/concerts/" + concertId));
-//        addCookie(builder, clientId);
-//        return builder.build(); // TODO: check content of concert before adding, throw error
-//
+//        Response.ResponseBuilder builder = Response.noContent();
+//        return builder.build(); // TODO: check, throw error
 //    }
-
-    @DELETE
-    @Path("/{id}")
-    @Produces({"application/json"})
-    @Consumes({"application/json"})
-    public Response delete(@PathParam("id") long id) {
-
-        Concert concert = null;
-        // Acquire an EntityManager (creating a new persistence context).
-        EntityManager em = PersistenceManager.instance().createEntityManager();
-        try {// dont need transaction begin and commit as its only reading DB
-            em.getTransaction().begin();
-            concert = em.find(Concert.class, id);
-            em.remove(concert);
-            em.getTransaction().commit();
-        } finally {
-            // When you're done using the EntityManager, close it to free up resources.
-            em.close();
-        }
-        if (concert == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-        Response.ResponseBuilder builder = Response.noContent();
-        //addCookie(builder, clientId);
-        return builder.build(); // TODO: check, throw error
-    }
-
-    @PUT
-    public Response updateConcert(Concert concert) {
-
-
-        // Acquire an EntityManager (creating a new persistence context).
-        EntityManager em = PersistenceManager.instance().createEntityManager();
-        try {// dont need transaction begin and commit as its only reading DB
-            em.getTransaction().begin();
-            em.merge(concert);
-            em.getTransaction().commit();
-        } finally {
-            // When you're done using the EntityManager, close it to free up resources.
-            em.close();
-        }
-
-        Response.ResponseBuilder builder = Response.noContent();
-        //addCookie(builder, clientId);
-        return builder.build(); // TODO: check, throw error
-    }
-
-    @DELETE
-    @Produces({"application/json"})
-    @Consumes({"application/json"})
-    public Response deleteAllConcerts(@CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
-
-
-        // Acquire an EntityManager (creating a new persistence context).
-        EntityManager em = PersistenceManager.instance().createEntityManager();
-        try {// dont need transaction begin and commit as its only reading DB
-            em.getTransaction().begin();
-            TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c", Concert.class);
-            List<Concert> concerts = concertQuery.getResultList();
-
-            for (Concert c : concerts) {
-                em.remove(c);
-            }
-            em.getTransaction().commit();
-        } finally {
-            // When you're done using the EntityManager, close it to free up resources.
-            em.close();
-        }
-
-        Response.ResponseBuilder builder = Response.noContent();
-        addCookie(builder, clientId);
-        return builder.build(); // TODO: check, throw error
-    }
-
-
-    // helper method
-    private void addCookie(Response.ResponseBuilder builder, Cookie clientId) {
-        NewCookie nCookie = makeCookie(clientId);
-        if (nCookie != null) { // dont have a cookie so one was made
-            builder.cookie(nCookie); // add cookie to response
-        } else { // TODO: idk if this is needed
-            builder.cookie(new NewCookie(clientId));
-        }
-    }
-
-    /**
-     * Helper method that can be called from every service method to generate a
-     * NewCookie instance, if necessary, based on the clientId parameter.
-     *
-     * @param clientId the Cookie whose name is Config.CLIENT_COOKIE, extracted
-     *                 from a HTTP request message. This can be null if there was no cookie
-     *                 named Config.CLIENT_COOKIE present in the HTTP request message.
-     * @return a NewCookie object, with a generated UUID value, if the clientId
-     * parameter is null. If the clientId parameter is non-null (i.e. the HTTP
-     * request message contained a cookie named Config.CLIENT_COOKIE), this
-     * method returns null as there's no need to return a NewCookie in the HTTP
-     * response message.
-     */
-    private NewCookie makeCookie(Cookie clientId) {
-        NewCookie newCookie = null;
-
-        if (clientId == null) {
-            newCookie = new NewCookie(Config.CLIENT_COOKIE, UUID.randomUUID().toString());
-            LOGGER.info("Generated cookie: " + newCookie.getValue());
-        }
-
-        return newCookie;
-    }
+//
+//    @PUT
+//    public Response updateConcert(Concert concert) {
+//
+//
+//        // get EntityManager for transaction
+//        EntityManager em = PersistenceManager.instance().createEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//            // use merge to update concert
+//            em.merge(concert);
+//            em.getTransaction().commit();
+//        } finally {
+//            em.close();
+//        }
+//
+//        Response.ResponseBuilder builder = Response.noContent();
+//        return builder.build(); // TODO: check, throw error
+//    }
+//
+//    @DELETE
+//    @Produces({"application/json"})
+//    @Consumes({"application/json"})
+//    public Response deleteAllConcerts() {
+//
+//
+//        // get EntityManager for transaction
+//        EntityManager em = PersistenceManager.instance().createEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//            TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c", Concert.class);
+//            List<Concert> concerts = concertQuery.getResultList();
+//
+//            // remove each concert from the DB
+//            // could use JPQL delete query but that risks bypassing the entity manager
+//            // and threatening synchronisation
+//            for (Concert c : concerts) {
+//                em.remove(c);
+//            }
+//            em.getTransaction().commit();
+//        } finally {
+//            em.close();
+//        }
+//
+//        Response.ResponseBuilder builder = Response.noContent();
+//        return builder.build(); // TODO: check, throw error
+//    }
 }

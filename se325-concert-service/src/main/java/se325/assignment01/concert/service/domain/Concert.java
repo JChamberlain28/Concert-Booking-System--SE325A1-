@@ -10,8 +10,6 @@ import javax.persistence.*;
 @Table(name ="CONCERTS")
 public class Concert {
 
-    // TODO Is this a generated value, cos one of the rest methods persists then gets generated ID (is it by default?)
-
     @Id
     private Long id;
 
@@ -25,15 +23,16 @@ public class Concert {
 
     @ElementCollection
     @Column(name = "DATE")
-    private Set<LocalDateTime> dates = new HashSet<>(); //TODO: should autogen CONCERT_DATES table (check tat hashset makes date the pk)
+    private Set<LocalDateTime> dates = new HashSet<>();
 
-    // dont need to cascade remove as the API doesnt support removing a performer
-    @ManyToMany//(cascade = CascadeType.PERSIST) // TODO: is it many to many, and oes cascade delete delete a performer even if it is also referd to by another concert
+    // dont need to cascade remove/persist as the API doesnt support removing or adding a performer
+    @ManyToMany
+    // defines the table linking Concert and Performer, as specified in db-init.sql
     @JoinTable(
             name = "CONCERT_PERFORMER",
             joinColumns=@JoinColumn(name = "CONCERT_ID"),
             inverseJoinColumns=@JoinColumn(name = "PERFORMER_ID"))
-    private Set<Performer> performers = new HashSet<>(); //TODO: change back to arraylist?
+    private Set<Performer> performers = new HashSet<>();
     public Concert() {
     }
 

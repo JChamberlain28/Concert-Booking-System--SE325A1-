@@ -17,9 +17,9 @@ public class ConcertMapper {
                 concert.getImageName(), concert.getBlurb());
 
         concertDTO.setDates(concert.getDates().stream().collect(Collectors.toList()));
-        // TODO: uh new ArrayList<LocalDateTime>(concert.getDates()) ?
 
-        // converts each performer to a performerDTO and then collects them in a list
+        // converts each performer to a performerDTO and then collects them in a list, then adding them
+        // to the ConcertDTO
         concertDTO.setPerformers(concert.getPerformers().stream()
                 .map(performer -> PerformerMapper.convertToDTO(performer)).collect(Collectors.toList()));
 

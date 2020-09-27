@@ -1,25 +1,16 @@
 package se325.assignment01.concert.service.services;
 
-import net.bytebuddy.asm.Advice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se325.assignment01.concert.common.dto.PerformerDTO;
 import se325.assignment01.concert.common.dto.SeatDTO;
 import se325.assignment01.concert.common.types.BookingStatus;
-import se325.assignment01.concert.service.common.Config;
-import se325.assignment01.concert.service.domain.Booking;
-import se325.assignment01.concert.service.domain.Concert;
 import se325.assignment01.concert.service.domain.Seat;
 import se325.assignment01.concert.service.jaxrs.LocalDateTimeParam;
-import se325.assignment01.concert.service.mapper.ConcertMapper;
-import se325.assignment01.concert.service.mapper.PerformerMapper;
 import se325.assignment01.concert.service.mapper.SeatMapper;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
@@ -58,7 +49,7 @@ public class SeatResource {
 
 
 
-        // new persistence context
+        // get EntityManager for transaction
         EntityManager em = PersistenceManager.instance().createEntityManager();
         try {
             em.getTransaction().begin();
@@ -66,7 +57,7 @@ public class SeatResource {
             List<Seat> seats = seatQuery.getResultList();
             em.getTransaction().commit();
 
-
+            // convert Seat objects into SeatDTO objects for use in data transfer
             GenericEntity<List<SeatDTO>> entity = new GenericEntity<List<SeatDTO>>(seats.stream()
                         .map(seat -> SeatMapper.convertToDTO(seat)).collect(Collectors.toList())){};
             Response.ResponseBuilder builder = Response.ok(entity);

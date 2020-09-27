@@ -7,7 +7,7 @@ public class PerformerMapper {
 
     public static PerformerDTO convertToDTO(Performer performer){
 
-        // create dto using field info contained in a performer object
+        // create performer dto using field info contained in a performer object
         return new PerformerDTO(performer.getId(), performer.getName(),
                 performer.getImageName(), performer.getGenre(), performer.getBlurb());
 

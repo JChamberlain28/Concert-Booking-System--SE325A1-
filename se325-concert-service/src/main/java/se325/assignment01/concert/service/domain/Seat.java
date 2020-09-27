@@ -12,7 +12,7 @@ import java.util.Objects;
 @Entity
 public class Seat {
 
-	// TODO how do we show platinum gold etc
+
 
 	@Id
 	@GeneratedValue
@@ -25,6 +25,8 @@ public class Seat {
 	private boolean isBooked;
 	@Column(name = "DATE")
 	private LocalDateTime date;
+
+	// versioning for optimistic locking
 	@Version
 	private int version;
 
