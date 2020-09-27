@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name ="PERFORMERS")
-public class Performer {//} implements Comparable<Performer> {
+public class Performer {
 
     @Id
     private Long id;
@@ -90,37 +90,6 @@ public class Performer {//} implements Comparable<Performer> {
     public void setConcerts(HashSet<Concert> concerts) {
         this.concerts = concerts;
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//
-//        if (o == null || getClass() != o.getClass()) return false;
-//
-//        Performer that = (Performer) o;
-//
-//        return new EqualsBuilder()
-//                .append(id, that.id)
-//                .append(name, that.name)
-//                .append(imageName, that.imageName)
-//                .append(genre, that.genre)
-//                .isEquals();
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return new HashCodeBuilder(17, 37)
-//                .append(id)
-//                .append(name)
-//                .append(imageName)
-//                .append(genre)
-//                .toHashCode();
-//    }
-//
-//    @Override
-//    public int compareTo(Performer other) {
-//        return other.getName().compareTo(getName());
-//    }
 
 
 }

@@ -54,8 +54,8 @@ public class BookingResource {
     public Response book(BookingRequestDTO br, @CookieParam(Config.CLIENT_COOKIE) Cookie auth) {
 
 
-        // check DTO is valid
-        if ((br.getDate() == null) || (br.getSeatLabels().isEmpty())){
+        // check DTO is valid (including duplicate seat labels)
+        if ((br.getDate() == null) || (br.getSeatLabels().isEmpty()) || (br.getSeatLabels().size() != (new HashSet(br.getSeatLabels())).size())){
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 

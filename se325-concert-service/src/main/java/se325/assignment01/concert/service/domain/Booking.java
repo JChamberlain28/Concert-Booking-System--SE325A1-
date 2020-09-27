@@ -25,7 +25,7 @@ public class Booking {
 
     // Eager fetch here as we access properties of all seats to set to booked
     // (This assumes that the original query to get seats is eager due to it then being put into this set)
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Seat> seats = new HashSet<>();
     public Booking() {
     }

@@ -60,29 +60,5 @@ public class Seat {
 	public void setIsBooked(boolean isBooked) { this.isBooked = isBooked; }
 
 
-	@Override
-	public String toString() {
-		return label;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Seat seat = (Seat) o;
-
-		return new EqualsBuilder()
-				.append(label, seat.label)
-				.isEquals();
-	}
-
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(17, 37)
-				.append(label)
-				.toHashCode();
-	}
 
 }
