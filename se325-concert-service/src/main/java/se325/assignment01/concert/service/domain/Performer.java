@@ -13,10 +13,9 @@ import java.util.Set;
 
 @Entity
 @Table(name ="PERFORMERS")
-public class Performer implements Comparable<Performer> {
+public class Performer {//} implements Comparable<Performer> {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "NAME")
@@ -30,8 +29,8 @@ public class Performer implements Comparable<Performer> {
     private String blurb;
 
     @ManyToMany(mappedBy = "performers")
-    //private Set<Concert> concerts = new HashSet<>();
-    private List<Concert> concerts = new ArrayList<>();
+    // set prevents concert being added twice
+    private Set<Concert> concerts = new HashSet<>();
 
     public Performer() {
     }
@@ -84,44 +83,44 @@ public class Performer implements Comparable<Performer> {
         this.blurb = blurb;
     }
 
-    public List<Concert> getConcerts() {
+    public Set<Concert> getConcerts() {
         return concerts;
     }
 
-    public void setConcerts(List<Concert> concerts) {
+    public void setConcerts(HashSet<Concert> concerts) {
         this.concerts = concerts;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Performer that = (Performer) o;
-
-        return new EqualsBuilder()
-                .append(id, that.id)
-                .append(name, that.name)
-                .append(imageName, that.imageName)
-                .append(genre, that.genre)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(id)
-                .append(name)
-                .append(imageName)
-                .append(genre)
-                .toHashCode();
-    }
-
-    @Override
-    public int compareTo(Performer other) {
-        return other.getName().compareTo(getName());
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Performer that = (Performer) o;
+//
+//        return new EqualsBuilder()
+//                .append(id, that.id)
+//                .append(name, that.name)
+//                .append(imageName, that.imageName)
+//                .append(genre, that.genre)
+//                .isEquals();
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return new HashCodeBuilder(17, 37)
+//                .append(id)
+//                .append(name)
+//                .append(imageName)
+//                .append(genre)
+//                .toHashCode();
+//    }
+//
+//    @Override
+//    public int compareTo(Performer other) {
+//        return other.getName().compareTo(getName());
+//    }
 
 
 }

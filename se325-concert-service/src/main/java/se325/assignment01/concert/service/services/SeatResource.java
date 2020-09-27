@@ -17,19 +17,34 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This resource class contains the endpoint for getting seats
+ */
+
 @Path("/concert-service/seats")
 public class SeatResource {
 
     private static Logger LOGGER = LoggerFactory.getLogger(SeatResource.class);
 
 
+    /**
+     * This method is an endpoint that gets seats for a specific date and (if supplied),
+     * a matching booking status (Booked, Unbooked, Any).
+     * @param bookingStatus - An enum value with the seat status of seats to return
+     * @param dateString - The date to use when finding seats for the supplied date
+     * @return - A list of SeatDTO objects holding seat information such as price and label
+     *          (converted to json)
+     */
+
     @GET
     @Path("/{date}")
     @Produces({"application/json"})
     @Consumes({"application/json"})
-    public Response retrieveSeats(@QueryParam("status") @DefaultValue("Any") BookingStatus bookingStatus, @PathParam("date") String dateString){ //, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
+    public Response retrieveSeats(@QueryParam("status") @DefaultValue("Any") BookingStatus bookingStatus, @PathParam("date") String dateString) {
 
         LocalDateTime dateObj = new LocalDateTimeParam(dateString).getLocalDateTime();
+
+
 
 
 
@@ -43,7 +58,7 @@ public class SeatResource {
             query += " and isBooked = false";
 
         } else {
-            // TODO is this bad request if unknown status put in
+            // If there is an unknown value in the status query parameter, then it is a bad request
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 

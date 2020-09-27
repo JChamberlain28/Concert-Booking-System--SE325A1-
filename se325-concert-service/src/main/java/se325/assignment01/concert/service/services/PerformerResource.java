@@ -13,13 +13,22 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This resource class contains endpoints for getting performers
+ */
+
 @Path("/concert-service/performers")
 public class PerformerResource {
 
 
     private static Logger LOGGER = LoggerFactory.getLogger(PerformerResource.class);
 
-
+    /**
+     * This method is an endpoint that gets a performer based on an "id" path parameter.
+     * It returns a 404 NOT FOUND HTTP code if there is no performer with the specified id.
+     * @param id - The id of the performer to retrieve
+     * @return - A performer data transfer object with performer details in it (converted to json)
+     */
 
     @GET
     @Path("/{id}")
@@ -59,8 +68,10 @@ public class PerformerResource {
     }
 
 
-
-
+    /**
+     * This method is an endpoint that gets all performers.
+     * @return - List of PerformerDTO objects (converted to json)
+     */
 
     @GET
     @Produces({"application/json"})
@@ -73,13 +84,23 @@ public class PerformerResource {
         // get EntityManager for transaction
         EntityManager em = PersistenceManager.instance().createEntityManager();
         try {
-            performers = getPerformersFromDB(em);
+
+            em.getTransaction().begin();
+            TypedQuery<Performer> performerQuery = em.createQuery("select p from Performer p", Performer.class);
+            performers = performerQuery.getResultList();
+
+
+
+
             // Converts all Performers in the list of Performers to PerformerDTO's and adds them to a list collection.
             // This is then wrapped in a GenericEntity.
             GenericEntity<List<PerformerDTO>> entity = new GenericEntity<List<PerformerDTO>>(performers.stream()
                     .map(performer -> PerformerMapper.convertToDTO(performer)).collect(Collectors.toList())) {
             };
+
+            em.getTransaction().commit();
             Response.ResponseBuilder builder = Response.ok(entity);
+
 
             return builder.build();
         } finally {
@@ -91,113 +112,5 @@ public class PerformerResource {
 
 
 
-    // helper method to get all performers from DB
-    private List<Performer> getPerformersFromDB(EntityManager em){
-        em.getTransaction().begin();
-        TypedQuery<Performer> performerQuery = em.createQuery("select p from Performer p", Performer.class);
-        List<Performer> performers = performerQuery.getResultList();
-        em.getTransaction().commit();
-        return performers; // TODO: am I comitting to early? cos performer list used elsewhere?
-    }
-
-
-//    @POST
-//    @Produces({"application/json"})
-//    @Consumes({"application/json"})
-//    public Response createPerformer(Performer performer, @CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
-//
-//        String performerId;
-//        // Acquire an EntityManager (creating a new persistence context).
-//        EntityManager em = PersistenceManager.instance().createEntityManager();
-//        try {// dont need transaction begin and commit as its only reading DB
-//            em.getTransaction().begin();
-//            em.persist(performer);
-//            em.flush();
-//            performerId = performer.getId().toString();
-//            em.getTransaction().commit();
-//        } finally {
-//            // When you're done using the EntityManager, close it to free up resources.
-//            em.close();
-//        }
-//
-//
-//        Response.ResponseBuilder builder = Response.created(URI.create("/performers/" + performerId));
-//        //addCookie(builder, clientId);
-//        return builder.build(); // TODO: check content of concert before adding, throw error
-//
-//    }
-
-//    @DELETE
-//    @Path("/{id}")
-//    @Produces({"application/json"})
-//    @Consumes({"application/json"})
-//    public Response delete(@PathParam("id") long id) {
-//
-//        Performer performer = null;
-//        // Acquire an EntityManager (creating a new persistence context).
-//        EntityManager em = PersistenceManager.instance().createEntityManager();
-//        try {// dont need transaction begin and commit as its only reading DB
-//            em.getTransaction().begin();
-//            performer = em.find(Performer.class, id);
-//            em.remove(performer);
-//            em.getTransaction().commit();
-//        } finally {
-//            // When you're done using the EntityManager, close it to free up resources.
-//            em.close();
-//        }
-//        if (performer == null) {
-//            throw new WebApplicationException(Response.Status.NOT_FOUND);
-//        }
-//        Response.ResponseBuilder builder = Response.noContent();
-//        //addCookie(builder, clientId);
-//        return builder.build(); // TODO: check, throw error
-//    }
-//
-//    @PUT
-//    public Response updatePerformer(Performer performer) {
-//
-//
-//        // Acquire an EntityManager (creating a new persistence context).
-//        EntityManager em = PersistenceManager.instance().createEntityManager();
-//        try {// dont need transaction begin and commit as its only reading DB
-//            em.getTransaction().begin();
-//            em.merge(performer);
-//            em.getTransaction().commit();
-//        } finally {
-//            // When you're done using the EntityManager, close it to free up resources.
-//            em.close();
-//        }
-//
-//        Response.ResponseBuilder builder = Response.noContent();
-//        //addCookie(builder, clientId);
-//        return builder.build(); // TODO: check, throw error
-//    }
-//
-//    @DELETE
-//    @Produces({"application/json"})
-//    @Consumes({"application/json"})
-//    public Response deleteAllPerformers(@CookieParam(Config.CLIENT_COOKIE) Cookie clientId) {
-//
-//
-//        // Acquire an EntityManager (creating a new persistence context).
-//        EntityManager em = PersistenceManager.instance().createEntityManager();
-//        try {// dont need transaction begin and commit as its only reading DB
-//            em.getTransaction().begin();
-//            TypedQuery<Performer> concertQuery = em.createQuery("select p from Performer p", Performer.class);
-//            List<Performer> performers = concertQuery.getResultList();
-//
-//            for (Performer c : performers) {
-//                em.remove(c);
-//            }
-//            em.getTransaction().commit();
-//        } finally {
-//            // When you're done using the EntityManager, close it to free up resources.
-//            em.close();
-//        }
-//
-//        Response.ResponseBuilder builder = Response.noContent();
-//        addCookie(builder, clientId);
-//        return builder.build(); // TODO: check, throw error
-//    }
 
 }

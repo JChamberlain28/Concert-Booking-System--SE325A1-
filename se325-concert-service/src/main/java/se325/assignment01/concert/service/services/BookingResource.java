@@ -53,6 +53,13 @@ public class BookingResource {
     @Consumes({"application/json"})
     public Response book(BookingRequestDTO br, @CookieParam(Config.CLIENT_COOKIE) Cookie auth) {
 
+
+        // check DTO is valid
+        if ((br.getDate() == null) || (br.getSeatLabels().isEmpty())){
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
+
         // Acquire an EntityManager (creating a new persistence context).
         EntityManager em = PersistenceManager.instance().createEntityManager();
         try {// dont need transaction begin and commit as its only reading DB
@@ -67,6 +74,11 @@ public class BookingResource {
 
 
             if (concert == null){
+                em.getTransaction().rollback();
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
+
+            if (br.getSeatLabels().isEmpty()){
                 em.getTransaction().rollback();
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
@@ -156,18 +168,19 @@ public class BookingResource {
 
             Booking booking = em.find(Booking.class, id);
 
-            if (booking == null){
-                // the booking id does not match any booking
-                em.getTransaction().rollback();
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
 
-
-
+            // this is done first to hide if a booking exists but doesnt belong to the user
             if (!authUser.hasBooking(booking)){
                 // user is not allowed to access a booking that doesnt belong to them
                 em.getTransaction().rollback();
                 throw new WebApplicationException((Response.Status.FORBIDDEN));
+            }
+
+
+            if (booking == null){
+                // the booking id does not match any booking
+                em.getTransaction().rollback();
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
             Response.ResponseBuilder response = Response.ok(BookingMapper.convertToDTO(booking));
@@ -248,7 +261,14 @@ public class BookingResource {
     @Consumes({"application/json"})
     public void subscribe(ConcertInfoSubscriptionDTO concertSubscriptionInfoDTO,
                                     @Suspended AsyncResponse asyncResp, @CookieParam(Config.CLIENT_COOKIE) Cookie auth) {
+
         Long concertId = concertSubscriptionInfoDTO.getConcertId();
+
+        // check DTO is valid
+        if ((concertId == null) || (concertSubscriptionInfoDTO.getDate() == null)){
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
         EntityManager em = PersistenceManager.instance().createEntityManager();
         try {
             em.getTransaction().begin();
@@ -344,6 +364,8 @@ public class BookingResource {
 
         if (userResult.isEmpty()) {
             em.getTransaction().rollback();
+            // This is not FORBIDDEN, as the only case where no User is found, is when a non-authentic / non-valid
+            // auth token is supplied. Hence it is equivalent to not providing an auth token at all.
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
 

@@ -65,6 +65,9 @@ public class User {
 
     public boolean hasBooking(Booking booking){
         // using overridden equals() method in the User class
+        if (booking == null){
+            return false;
+        }
         if (usersBookings.contains(booking)){
             return true;
         }

@@ -16,10 +16,22 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This resource class contains the endpoint for logging in to the web service
+ */
+
 @Path("/concert-service/login")
 public class LoginResource {
 
     private static Logger LOGGER = LoggerFactory.getLogger(LoginResource.class);
+
+    /**
+     * This method is an endpoint that handles login requests. If a username and password matches one in the database,
+     * ana authentication token, identifying the user is sent back for use in other endpoint calls. If the user does
+     * not exist, a HTTP unauthorised response is returned.
+     * @param user - UserDTO object containing the username and password for the login attempt
+     * @return - A HTTP response containing the authentication token (if login was successful)
+     */
 
     @POST
     @Produces({"application/json"})
@@ -29,6 +41,11 @@ public class LoginResource {
 
         String username = user.getUsername();
         String password = user.getPassword();
+
+        // check DTO was valid
+        if ((username == null) || (password == null)){
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
 
         List<User> userResults = null;
         // get EntityManager for transaction
