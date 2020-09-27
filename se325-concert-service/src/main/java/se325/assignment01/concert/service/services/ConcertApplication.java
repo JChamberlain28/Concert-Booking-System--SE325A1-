@@ -15,7 +15,7 @@ import java.util.Set;
 @ApplicationPath("/services")
 public class ConcertApplication extends Application {
 
-    // TODO: REMOVE ANDREWS COMMENTS! change to mine
+
 
     private Set<Object> singletons = new HashSet<>();
     private Set<Class<?>> classes = new HashSet<>();

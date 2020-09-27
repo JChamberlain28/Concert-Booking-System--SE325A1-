@@ -142,7 +142,7 @@ public class ConcertResource {
      * @return - A list of Concert objects representing concerts at the theatre
      */
 
-    // TODO: check if im closing transaction too early (look at other repo)
+
     private List<Concert> getConcertsFromDB(EntityManager em){
         em.getTransaction().begin();
         TypedQuery<Concert> concertQuery = em.createQuery("select c from Concert c", Concert.class);
