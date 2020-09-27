@@ -1,10 +1,7 @@
 package se325.assignment01.concert.service.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
-import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,7 +21,6 @@ public class Booking {
 
 
     // Eager fetch here as we access properties of all seats to set to booked
-    // (This assumes that the original query to get seats is eager due to it then being put into this set)
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Seat> seats = new HashSet<>();
     public Booking() {

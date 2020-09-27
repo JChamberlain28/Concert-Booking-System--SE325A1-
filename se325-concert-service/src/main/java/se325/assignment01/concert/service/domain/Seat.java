@@ -6,9 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-//TODO: is this an entity
 @Entity
 public class Seat {
 

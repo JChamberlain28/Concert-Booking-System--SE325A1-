@@ -408,7 +408,7 @@ public class ConcertResourceIT {
      * Test that multiple users are each able to access all of their own bookings. No user should be able to see
      * the bookings of any other user.
      */
-    @Ignore
+
 @Test
     public void testGetAllBookingsForUser() {
 
@@ -638,7 +638,7 @@ public class ConcertResourceIT {
     /**
      * Tests that the unbooked seats for a particular concert on a particular date can be queried.
      */
-    @Ignore
+
 @Test
     public void testGetUnbookedSeatsForDate() {
         // Log in

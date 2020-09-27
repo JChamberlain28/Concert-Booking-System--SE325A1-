@@ -1,14 +1,10 @@
 package se325.assignment01.concert.service.domain;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import se325.assignment01.concert.common.dto.PerformerDTO;
+
 import se325.assignment01.concert.common.types.Genre;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
