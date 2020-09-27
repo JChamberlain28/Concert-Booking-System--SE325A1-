@@ -75,43 +75,5 @@ public class User {
     }
 
 
-//    // returns true if the provided the cookie token is associated with this user
-//    public boolean tokenMatch(Cookie token){
-//        if (userToken == null){
-//            return false;
-//        }
-//        return userToken.equals(token.getValue());
-//    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        return new EqualsBuilder()
-                .append(username, user.username)
-                .append(password, user.password)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(username)
-                .append(password)
-                .toHashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "UserDTO{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
 
 }
