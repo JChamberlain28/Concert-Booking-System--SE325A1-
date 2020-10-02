@@ -1,3 +1,8 @@
+Note: Classes created by me are in the ```se325.assignmnet01.concert.service``` package (excluding the jaxrs sub-package). Classes modified by me are in the ```se325.assignmnet01.concert.common.dto``` package.
+
+
+
+
 SOFTENG 325 Assignment 01 - A Concert Booking Service
 ==========
 **NOTE:** This README contains the same content as the **PDF** handout you are given.
